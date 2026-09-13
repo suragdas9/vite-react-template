@@ -1,0 +1,57 @@
+# ============================================================
+# TruRides Admin Dashboard – .htaccess Security Rules
+# ============================================================
+
+# Force HTTPS (uncomment if hosting supports mod_rewrite)
+# RewriteEngine On
+# RewriteCond %{HTTPS} off
+# RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Disable directory listing - commented for InfinityFree compatibility
+# Options -Indexes
+
+# Protect sensitive includes directory
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Block direct access to includes/
+    RewriteRule ^includes/(.*)$ - [F,L]
+
+    # Block direct access to api/ without session (handled in PHP)
+    # (PHP session check is the primary gate)
+</IfModule>
+
+# Deny access to config.php directly
+<Files "config.php">
+    Require all denied
+</Files>
+
+# Deny access to auth.php directly
+<Files "auth.php">
+    Require all denied
+</Files>
+
+# Deny access to .htaccess itself
+<Files ".htaccess">
+    Require all denied
+</Files>
+
+# Security Headers
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set X-XSS-Protection "1; mode=block"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# Default document
+DirectoryIndex index.php
+
+# PHP settings commented out for InfinityFree compatibility 
+# (Free hosts often trigger 500 error if php_value is present)
+# <IfModule mod_php.c>
+#     php_value session.cookie_httponly 1
+#     php_value session.cookie_samesite Strict
+#     php_value session.use_strict_mode 1
+#     php_value expose_php Off
+# </IfModule>
